@@ -8,7 +8,7 @@ de classificação com validação cruzada, avaliação no conjunto de teste
 (matriz de confusão, classification report, ROC/AUC) e interpretação de
 importâncias de variáveis. 
 
-Todas as saídas são gravadas em reports/ e models/.
+Todas as saídas são gravadas em results/ e models/.
 
 Uso:
     python src/train_model.py
@@ -60,11 +60,11 @@ QUALITY_THRESHOLD = 7  # nota >= 7 -> vinho de alta qualidade (conforme enunciad
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "data" / "WineQT.csv"
-REPORTS_DIR = ROOT / "reports"
-FIGURES_DIR = REPORTS_DIR / "figures"
+RESULTS_DIR = ROOT / "results"
+FIGURES_DIR = RESULTS_DIR / "figures"
 MODELS_DIR = ROOT / "models"
 
-for d in (REPORTS_DIR, FIGURES_DIR, MODELS_DIR):
+for d in (RESULTS_DIR, FIGURES_DIR, MODELS_DIR):
     d.mkdir(parents=True, exist_ok=True)
 
 sns.set_theme(style="whitegrid", palette="deep")
@@ -79,7 +79,7 @@ def savefig(fig: plt.Figure, name: str) -> None:
     fig.tight_layout()
     fig.savefig(path, bbox_inches="tight")
     plt.close(fig)
-    print(f"  figura salva: reports/figures/{name}")
+    print(f"  figura salva: results/figures/{name}")
 
 
 def outlier_summary(df: pd.DataFrame) -> pd.DataFrame:
@@ -103,8 +103,8 @@ def outlier_summary(df: pd.DataFrame) -> pd.DataFrame:
                      "limite_inferior": lo, "limite_superior": hi,
                      "qtd_outliers": n, "pct_outliers": 100 * n / len(df)})
     summary = pd.DataFrame(rows).sort_values("qtd_outliers", ascending=False)
-    summary.to_csv(REPORTS_DIR / "outliers_summary.csv", index=False)
-    print("  reports/outliers_summary.csv")
+    summary.to_csv(RESULTS_DIR / "outliers_summary.csv", index=False)
+    print("  results/outliers_summary.csv")
     return summary
 
 
@@ -413,18 +413,18 @@ def persist(results_df, best_name, fitted, cv_results, preds, importances,
             y_test, df_shape):
     print("\n[7] Salvando metricas, relatorios e modelo...")
 
-    results_df.to_csv(REPORTS_DIR / "model_comparison.csv")
-    print("  reports/model_comparison.csv")
+    results_df.to_csv(RESULTS_DIR / "model_comparison.csv")
+    print("  results/model_comparison.csv")
 
     # classification report do melhor modelo
     report = classification_report(
         y_test, preds[best_name],
         target_names=["Baixa/Media (0)", "Alta (1)"], digits=4
     )
-    (REPORTS_DIR / "classification_report.txt").write_text(
+    (RESULTS_DIR / "classification_report.txt").write_text(
         f"Melhor modelo: {best_name}\n\n{report}\n", encoding="utf-8"
     )
-    print("  reports/classification_report.txt")
+    print("  results/classification_report.txt")
 
     metrics = {
         "dataset": {"linhas": int(df_shape[0]), "colunas": int(df_shape[1])},
@@ -436,10 +436,10 @@ def persist(results_df, best_name, fitted, cv_results, preds, importances,
     }
     if importances is not None:
         metrics["importancia_variaveis"] = {k: float(v) for k, v in importances.items()}
-    (REPORTS_DIR / "metrics.json").write_text(
+    (RESULTS_DIR / "metrics.json").write_text(
         json.dumps(metrics, indent=2, ensure_ascii=False), encoding="utf-8"
     )
-    print("  reports/metrics.json")
+    print("  results/metrics.json")
 
     joblib.dump(fitted[best_name], MODELS_DIR / "best_model.joblib")
     print(f"  models/best_model.joblib ({best_name})")
@@ -464,7 +464,7 @@ def main():
     persist(results_df, best_name, fitted, cv_results, preds, importances,
             y_test, df.shape)
     print("\n" + "=" * 70)
-    print("CONCLUIDO. Artefatos em reports/, reports/figures/ e models/.")
+    print("CONCLUIDO. Artefatos em results/, results/figures/ e models/.")
     print("=" * 70)
 
 
