@@ -1,0 +1,11 @@
+Melhor modelo: RandomForest
+
+                 precision    recall  f1-score   support
+
+Baixa/Media (0)     0.9415    0.9096    0.9253       177
+       Alta (1)     0.5152    0.6296    0.5667        27
+
+       accuracy                         0.8725       204
+      macro avg     0.7283    0.7696    0.7460       204
+   weighted avg     0.8851    0.8725    0.8778       204
+
