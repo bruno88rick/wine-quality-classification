@@ -1,9 +1,11 @@
 
-# Classificação da Qualidade de Vinhos com Machine Learning
+# Classificação da Qualidade de Vinhos com Machine Learning - Vitivinícola
 
 **Tech Challenge — Fase 2 — PósTech FIAP Data Analytics (2026)**
-Aluno: Bruno Ricardo de Oliveira — Grupo 143
+Aluno: Bruno Ricardo de Oliveira
 
+---
+Veja como executar 
 ---
 
 ## 1. Contexto e Problema de Negócio
@@ -14,40 +16,28 @@ e equilíbrio. Esse processo é **subjetivo, lento e caro**, e dificulta a
 padronização em larga escala.
 
 Este projeto usa **dados físico-químicos** obtidos em laboratório para prever se
-um vinho será de **alta qualidade**, funcionando como um triador automático que
+um vinho será de **alta** ou **baixa/média** qualidade, funcionando como um triador automático que
 apoia enólogos e produtores na priorização de lotes e no controle de qualidade.
 
 ## 2. Objetivo
 
-Desenvolver e comparar modelos de **classificação binária** capazes de prever a
+Desenvolver e comparar modelos de **classificação** capazes de prever a
 qualidade do vinho a partir de suas características físico-químicas, avaliando o
-desempenho com métricas adequadas a um cenário de classes desbalanceadas.
+desempenho com métricas adequadas.
 
 ## 3. Definição da Variável Alvo
 
-Conforme o enunciado do Tech Challenge, a nota sensorial `quality` (0–10) foi
-transformada em um alvo binário:
+A nota sensorial `quality` (0–10) foi transformada em um alvo binário:
 
 | Classe                      | Regra            | Interpretação                    |
 | --------------------------- | ---------------- | ---------------------------------- |
 | **1 — Alta**         | `quality >= 7` | Vinho de alta qualidade            |
 | **0 — Baixa/Média** | `quality < 7`  | Vinho de qualidade baixa ou média |
-
-Após a preparação, apenas **~13% das amostras são de alta qualidade**, o que
-caracteriza um problema **desbalanceado** — motivo pelo qual a **acurácia isolada
-é enganosa** (ver seção 7).
+.
 
 ## 4. Dados
 
-- **Fonte:** Wine Quality Dataset (vinho tinto), arquivo `data/WineQT.csv`.
-- **Registros brutos:** 1.143 linhas × 13 colunas (11 variáveis físico-químicas +
-  `quality` + `Id`).
-- **Tratamento:** a coluna `Id` é descartada (não é feature) e **125 linhas com
-  perfil físico-químico idêntico são removidas** para evitar *data leakage* entre
-  treino e teste. Base final: **1.018 registros**. Não há valores ausentes.
-- **Variáveis (features):** fixed acidity, volatile acidity, citric acid,
-  residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density,
-  pH, sulphates, alcohol.
+- **Fonte avaliada:** Wine Quality Dataset (vinho tinto), arquivo `data/WineQT.csv`.
 
 ## 5. Estrutura do Repositório
 
@@ -57,13 +47,14 @@ wine-quality-classification/
 ├── data/
 │   └── WineQT.csv                     # base de dados
 ├── notebooks/
-│   └── wine_classification.ipynb      # EDA + modelagem (executado, com saídas)
+│   └── wine_classification.ipynb      # Storytelling + EDA + modelagem
 ├── src/
 │   ├── train_model.py                 # pipeline reprodutível ponta a ponta
-│   └── setup_VSCode.sh                # setup opcional do ambiente no VS Code
+│   └── setup_VSCode_win.sh                # setup opcional do ambiente no VS Code para windows
+│   └── setup_VSCode_mac.sh                # setup opcional do ambiente no VS Code para Mac e Linux
 ├── models/
-│   └── best_model.joblib              # melhor modelo serializado (Random Forest)
-├── reports/
+│   └── best_model.joblib              # melhor modelo serializado
+├── results/
 │   ├── apresentacao_executiva.md      # apresentação executiva (slides em Markdown)
 │   ├── roteiro_apresentacao_video.md  # roteiro de fala (substitui o vídeo)
 │   ├── relatorio_tecnico.md           # relatório técnico / model card
@@ -72,16 +63,15 @@ wine-quality-classification/
 │   ├── outliers_summary.csv           # sumário de outliers por variável (IQR)
 │   ├── classification_report.txt      # relatório do melhor modelo
 │   └── figures/                       # todas as figuras (EDA + avaliação)
-├── requirements.txt
-└── README.md
+├── requirements.txt                   # bibliotecas usadas no projeto
+└── README.md                          # este arquivo com a descrição do projeto
 ```
 
-> A pasta `reports/` cumpre o papel de `results/` sugerido no enunciado,
-> concentrando gráficos e métricas.
+> A pasta `results/` concentra os gráficos e métricas do projeto.
 
 ## 6. Como Executar
 
-Requer Python 3.10+ e não depende de internet (os dados já estão no repositório).
+Requer Python 3.10+ e não depende de internet (dados já estão no repositório)
 
 ```bash
 # 1) Criar e ativar ambiente virtual
