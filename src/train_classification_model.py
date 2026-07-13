@@ -1,7 +1,9 @@
 """Pipeline reprodutível de classificação da qualidade de vinhos.
 Tech Challenge - Fase 2 - PosTech FIAP Data Analytics.
+Bruo Ricardo de Oliveira - Data Analytics
 
-Executa o fluxo completo: carga dos dados, EDA (figuras), criação do alvo
+Executa o fluxo completo e gera o arquivo joblib do melhor modelo: 
+carga dos dados, EDA (figuras), criação do alvo
 binário (qualidade alta: quality >= 7), split treino/teste estratificado,
 pipelines scikit-learn com padronização, treino e tuning de vários modelos
 de classificação com validação cruzada, avaliação no conjunto de teste
@@ -13,7 +15,7 @@ Todas as saídas são gravadas em results/ e models/.
 Uso:
     python src/train_model.py
 
-Não depende de internet e fixa a semente aleatória para reprodutibilidade.
+Fixa a semente aleatória para reprodutibilidade.
 """
 
 from __future__ import annotations
@@ -56,7 +58,7 @@ warnings.filterwarnings("ignore")
 # ---------------------------------------------------------------------------
 RANDOM_STATE = 42
 TEST_SIZE = 0.20
-QUALITY_THRESHOLD = 7  # nota >= 7 -> vinho de alta qualidade (conforme enunciado)
+QUALITY_THRESHOLD = 7
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "data" / "WineQT.csv"
@@ -71,10 +73,14 @@ sns.set_theme(style="whitegrid", palette="deep")
 plt.rcParams["figure.figsize"] = (10, 6)
 plt.rcParams["figure.dpi"] = 110
 
-DROP_COLS = ["Id"]  # identificador, não é feature
+DROP_COLS = ["Id"]
 
 
 def savefig(fig: plt.Figure, name: str) -> None:
+    """
+    Salva figuras conforme pipe line - EDA e Modelagem
+    Salva em "results/figures/"
+    """
     path = FIGURES_DIR / name
     fig.tight_layout()
     fig.savefig(path, bbox_inches="tight")
@@ -83,10 +89,11 @@ def savefig(fig: plt.Figure, name: str) -> None:
 
 
 def outlier_summary(df: pd.DataFrame) -> pd.DataFrame:
-    """Quantifica outliers por variavel pelo metodo do IQR e salva em CSV.
+    """Quantifica outliers por variavel pelo metodo do IQR e salva no CSV "outliers_summary.csv".
 
     Um valor e outlier se estiver abaixo de Q1 - 1.5*IQR ou acima de
-    Q3 + 1.5*IQR. NAO removemos outliers: no dominio enologico eles costumam
+    Q3 + 1.5*IQR. 
+    Nao removemos outliers: no dominio enologico eles costumam
     representar perfis fisico-quimicos reais e podem carregar sinal util para
     a classificacao. O tratamento adequado e a padronizacao (StandardScaler),
     ja aplicada dentro dos pipelines de modelagem.
@@ -112,6 +119,9 @@ def outlier_summary(df: pd.DataFrame) -> pd.DataFrame:
 # 1. Carga dos dados
 # ---------------------------------------------------------------------------
 def load_data() -> pd.DataFrame:
+    """
+    Função para carregar os dados do data Frame
+    """
     print("\n[1] Carregando dados...")
     df = pd.read_csv(DATA_PATH)
     df = df.drop(columns=[c for c in DROP_COLS if c in df.columns])
@@ -119,7 +129,7 @@ def load_data() -> pd.DataFrame:
     print(f"  valores ausentes: {int(df.isnull().sum().sum())}")
 
     # Resumo de outliers calculado sobre a base bruta (antes da dedup), para
-    # fins descritivos. NAO removemos outliers automaticamente (ver justificativa
+    # fins descritivos. Nao removemos outliers automaticamente (ver justificativa
     # em outlier_summary()).
     outlier_summary(df)
 
@@ -137,6 +147,10 @@ def load_data() -> pd.DataFrame:
 # 2. EDA - figuras
 # ---------------------------------------------------------------------------
 def run_eda(df: pd.DataFrame) -> None:
+    """
+    Função que roda a Análise exploratória de dados e gera as 
+    figuras chamando "savefig"
+    """
     print("\n[2] EDA - gerando figuras...")
 
     # Distribuicao da nota original
@@ -197,6 +211,9 @@ def run_eda(df: pd.DataFrame) -> None:
 # 3. Preparacao do alvo e split
 # ---------------------------------------------------------------------------
 def prepare_split(df: pd.DataFrame):
+    """
+    Função para criar o alvbo binário e fazer a separação da base para treino e teste
+    """
     print("\n[3] Criando alvo binario e separando treino/teste...")
     y = (df["quality"] >= QUALITY_THRESHOLD).astype(int)
     X = df.drop(columns=["quality"])
@@ -214,7 +231,9 @@ def prepare_split(df: pd.DataFrame):
 # 4. Definicao de modelos e grids
 # ---------------------------------------------------------------------------
 def build_model_space():
-    """Retorna dict nome -> (pipeline, param_grid) para GridSearchCV.
+    """
+    Função que define os modelos e grids
+    Retorna models: Modelos definidos
 
     StandardScaler entra dentro do Pipeline para que o fit ocorra apenas no
     fold de treino de cada dobra da validacao cruzada, evitando data leakage.
@@ -270,6 +289,17 @@ def build_model_space():
 # 5. Treino + tuning com validacao cruzada
 # ---------------------------------------------------------------------------
 def train_models(X_train, y_train):
+    """
+    função para treinar os modelos
+    Parâmetros:
+        X_train:
+        y_train:
+
+    Retorna:
+        baseline: 
+        fitted:
+        cv_results:
+    """
     print("\n[4] Treinando e tunando modelos (StratifiedKFold=5, scoring=ROC-AUC)...")
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
 
@@ -298,6 +328,21 @@ def train_models(X_train, y_train):
 # 6. Avaliacao no teste
 # ---------------------------------------------------------------------------
 def evaluate(baseline, fitted, X_test, y_test):
+    """
+    Função para avalidar os modelos no conjunto de teste
+    
+    Parâmetros:
+        baseline:
+        fitted:
+        X_test:
+        y_test:
+
+    Retorna:
+        results_df: 
+        best_name:
+        preds:
+        scores_for_roc:
+    """
     print("\n[5] Avaliando no conjunto de teste...")
     rows = []
 
@@ -344,6 +389,9 @@ def evaluate(baseline, fitted, X_test, y_test):
 # ---------------------------------------------------------------------------
 def evaluation_figures(results_df, best_name, fitted, preds, scores_for_roc,
                        X_test, y_test, feature_names):
+    """
+    Função que cria as figuras de avaliação e interpretação, chamando savefig
+    """
     print("\n[6] Gerando figuras de avaliacao e interpretacao...")
 
     # Comparacao de modelos (ROC-AUC no teste)
@@ -411,6 +459,19 @@ def evaluation_figures(results_df, best_name, fitted, preds, scores_for_roc,
 # ---------------------------------------------------------------------------
 def persist(results_df, best_name, fitted, cv_results, preds, importances,
             y_test, df_shape):
+    """
+    Função para gerar as métricas e melhor modelo
+    
+    Parâmetros:
+        results_df:
+        best_name:
+        fitted:
+        cv_results:
+        preds:
+        importances,
+        y_test:
+        df_shape:
+    """
     print("\n[7] Salvando metricas, relatorios e modelo...")
 
     results_df.to_csv(RESULTS_DIR / "model_comparison.csv")
@@ -441,12 +502,15 @@ def persist(results_df, best_name, fitted, cv_results, preds, importances,
     )
     print("  results/metrics.json")
 
-    joblib.dump(fitted[best_name], MODELS_DIR / "best_model.joblib")
-    print(f"  models/best_model.joblib ({best_name})")
+    joblib.dump(fitted[best_name], MODELS_DIR / "model.joblib")
+    print(f"  models/model.joblib ({best_name})")
 
 
 # ---------------------------------------------------------------------------
 def main():
+    """
+    Função main printipal
+    """
     print("=" * 70)
     print("TECH CHALLENGE FASE 2 - CLASSIFICACAO DA QUALIDADE DE VINHOS")
     print("=" * 70)

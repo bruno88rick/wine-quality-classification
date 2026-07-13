@@ -5,8 +5,27 @@
 Aluno: Bruno Ricardo de Oliveira
 
 ---
-Veja como executar 
+#### Veja como executar a Pipeline mais abaixo no [tópico **6**](#Como-executar).
 ---
+
+## 0. Entregáveis do projeto para avaliação
+
+Os entregáveis do projeto para avaliação estão disponíveis na pasta [`entregaveis_trabalho`](entregaveis_trabalho), conforme abaixo:
+
+```
+wine-quality-classification/
+│
+├── data/
+├── entregaveis_trabalho/             # todos os entregáveis do trabalho para avaliação   
+│   ├── apresentacao_executiva.pdf    # apresentação executiva (slides da apresentação)    <---------
+│   ├── relatorio_executivo.pdf       # relatório executivo do projeto                     <---------
+│   ├── video_apresentacao.mp4        # apresentação executiva em vídeo do trabalho        <---------
+├── models/
+├── notebooks/
+├── results/
+├── src/
+...
+```
 
 ## 1. Contexto e Problema de Negócio
 
@@ -37,7 +56,7 @@ A nota sensorial `quality` (0–10) foi transformada em um alvo binário:
 
 ## 4. Dados
 
-- **Fonte avaliada:** Wine Quality Dataset (vinho tinto), arquivo `data/WineQT.csv`.
+- **Fonte avaliada:** Wine Quality Dataset, arquivo [`data/WineQT.csv`](data\WineQT.csv).
 
 ## 5. Estrutura do Repositório
 
@@ -46,75 +65,147 @@ wine-quality-classification/
 │
 ├── data/
 │   └── WineQT.csv                     # base de dados
+├── entregaveis_trabalho/              # todos os entregáveis do trabalho para avaliação
+│   ├── apresentacao_executiva.pptx    # apresentação executiva (slides da apresentação)
+│   ├── relatorio_executivo.pdf        # relatório executivo do projeto
+│   ├── video_apresentacao.mp4         # apresentação executiva em vídeo do trabalho
+├── models/
+│   └── model.joblib                   # melhor modelo serializado, conforme pipeline (gerado a partir da pipeline "train_classification_model.py")
 ├── notebooks/
 │   └── wine_classification.ipynb      # Storytelling + EDA + modelagem
-├── src/
-│   ├── train_model.py                 # pipeline reprodutível ponta a ponta
-│   └── setup_VSCode_win.sh                # setup opcional do ambiente no VS Code para windows
-│   └── setup_VSCode_mac.sh                # setup opcional do ambiente no VS Code para Mac e Linux
-├── models/
-│   └── best_model.joblib              # melhor modelo serializado
 ├── results/
-│   ├── apresentacao_executiva.md      # apresentação executiva (slides em Markdown)
-│   ├── roteiro_apresentacao_video.md  # roteiro de fala (substitui o vídeo)
-│   ├── relatorio_tecnico.md           # relatório técnico / model card
+│   └── figures/                       # todas as figuras (EDA + avaliação)
 │   ├── metrics.json                   # métricas de CV e teste
 │   ├── model_comparison.csv           # tabela comparativa de modelos
 │   ├── outliers_summary.csv           # sumário de outliers por variável (IQR)
-│   ├── classification_report.txt      # relatório do melhor modelo
-│   └── figures/                       # todas as figuras (EDA + avaliação)
-├── requirements.txt                   # bibliotecas usadas no projeto
+│   ├── classification_report.txt      # dados do melhor modelo
+├── src/
+│   ├── train_classification_model.py  # pipeline reprodutível ponta a ponta
+│   └── setup_VSCode_win.sh            # setup opcional do ambiente no VS Code para windows
+│   └── setup_VSCode_mac.sh            # setup opcional do ambiente no VS Code para Mac e Linux
 └── README.md                          # este arquivo com a descrição do projeto
+├── requirements.txt                   # bibliotecas usadas no projeto
 ```
 
-> A pasta `results/` concentra os gráficos e métricas do projeto.
+> A pasta [`results/`](results) concentra os gráficos e métricas do projeto.
 
-## 6. Como Executar
+## 6. Como Executar <a name="Como-executar"></a>
 
-Requer Python 3.10+ e não depende de internet (dados já estão no repositório)
+Requer Python 3.10+ -> [Download aqui](https://www.python.org/downloads/).
+
+Se executado via VSCode ou outra IDE relacionada, é recomendado criar o ambiente virtual do Python
+para execução do projeto, bem como instalar as dependências (bibliotecas) necessárias. Abaixo passo
+a passo para executar estes passos automaticamente (via script) ou de forma manual (caso o script automático falhe):
+
+### Rode Automaticamente:
+
+**Opção 1:** Abra o arquivo [`wine_classification.ipynb`](notebooks\wine_classification.ipynb) na IDE e execute "Run All" para 
+executar todo o código da pipeline, incluindo a criação e configuração do ambiente virtual `venv`;  
+**É Necessário que o Python esteja instalado na máquina** Além do ambiente virtual, toda a importação da base, preparação 
+e configuração, Análise Exploratória dos Dados e modelagem também serão executadas. 
+
+**Opção 2:** Execute a pipeline através do script python [`train_classification_model.py`](src\train_classification_model.py) 
+disponível na pasta abaixo. Este script executa a pineline completa, incluindo geração e exportação dos gráficos da EDA, 
+modelagem, exportação e métricas e exportação do melhor modelo.
+
+Rode:
+```bash
+python src/train_classification_model.py
+```
+
+Localização do arquivo:
+
+```
+...
+│
+├── data/
+├── models/
+├── notebooks/
+├── results/
+├── src/
+│   └── train_classification_model.py    # script para execução da pineline completa + exportações e métricas <---------
+...
+```
+
+**Opção 3:** Ou execute por bloco de código (sempre na sequência) para executar a pipe line. O primeiro bloco de código chamará o 
+script adequado para seu sistema operacional (arquivos `setup_VSCode_win.bat` ou `**setup_VSCode_mac.sh`) e criará o ambiente virtual
+`venv`. **É Necessário que o Python esteja instalado na máquina**
+
+No segundo bloco de código do notebook, as dependências listadas no arquivo ["requirements.txt"](requirements.txt) e necessárias 
+para execução do projeto serão instaladas no ambiente virtual.
+
+Do terceiro bloco de código em diante, segue o fluxo da importação da base de dados e primeiras configurações + EDA + modelagem. 
+
+```
+...
+│
+├── data/
+├── models/
+├── notebooks/
+│   └── wine_classification.ipynb      # Storytelling + EDA + modelagem    <---------
+├── results/
+├── src/
+│   └── setup_VSCode_win.sh            # setup opcional do ambiente no VS Code para windows      <---------
+│   └── setup_VSCode_mac.sh            # setup opcional do ambiente no VS Code para Mac e Linux  <---------
+...
+```
+
+### Rode Manualmente:
 
 ```bash
+
 # 1) Criar e ativar ambiente virtual
-python3 -m venv .venv
-source .venv/bin/activate            # Windows: .venv\Scripts\Activate.ps1
+
+# MAC/Linux
+python3 -m venv venv
+source venv/bin/activate
+pip install "ipykernel"
+python3 -m ipykernel install --user --name=venv --display-name "Python (venv)"  
+
+# Windows:
+python -m venv venv
+venv\Scripts\Activate
+pip install "ipykernel"
+python -m ipykernel install --user --name=venv --display-name "Python (venv)"
+
 
 # 2) Instalar dependências
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
-# 3a) Rodar o pipeline completo (gera figuras, métricas e modelo)
-python src/train_model.py
+#3 Execute a pipeline do projeto
 
-# 3b) Ou abrir o notebook para explorar a análise passo a passo
+# 3a) Abrir o notebook para explorar a análise passo a passo
 jupyter notebook notebooks/wine_classification.ipynb
+
+# 3b) Rodar o pipeline completo (gerando figuras, métricas e modelo) diretamente
+python src/python src/train_model.py
+
 ```
 
 Ambos os caminhos são **reprodutíveis** (`random_state=42`) e regeram os mesmos
-artefatos em `reports/`, `reports/figures/` e `models/`.
+artefatos em [`results/`](results), [`results/figures/`](results\figures) e [`models/`](models).
 
-> **Opcional (VS Code):** o script `src/setup_VSCode.sh` automatiza a criação do
-> ambiente virtual, a instalação das dependências e o registro do kernel Jupyter
-> para quem for explorar o notebook dentro do VS Code. Seu uso não é obrigatório —
-> os passos acima já bastam.
+> **Opcional (VS Code):** os script [`src/setup_VSCode_mac.sh`](src\setup_VSCode_mac.sh) e [`src/setup_VSCode_win.bat`](src\setup_VSCode_win.bat) 
+> automatiza a criação do ambiente virtual, a instalação das dependências e o registro do
+> kernel Jupyter para quem for explorar o notebook dentro do VS Code. Seu uso não é obrigatório —
+> O primeiro bloco de código do notebook [`wine_classification.ipynb`](notebooks\wine_classification.ipynb) chama os scripts acima de acordo
+> com o Sistema Operacional.
 
-## 7. Metodologia
+## 7. Metodologia do Projeto
 
 1. **EDA:** distribuição das notas, correlações justificadas, análise de outliers
    e verificação do balanceamento das classes.
-2. **Pré-processamento:** remoção de `Id` e duplicatas; padronização com
+2. **Pré-processamento:** remoção de `Id` e duplicatas ; padronização com
    `StandardScaler` **dentro de `Pipeline`** (fit apenas no treino → sem leakage).
 3. **Split estratificado:** 80% treino / 20% teste, preservando a proporção de
    classes.
 4. **Modelos:** um **baseline** (classe majoritária) + 4 classificadores —
-   Regressão Logística, SVM (RBF), Random Forest e Gradient Boosting.
+   Regressão Logística, SVM, Random Forest e Gradient Boosting.
 5. **Tuning:** `GridSearchCV` com `StratifiedKFold(5)`, otimizando **ROC-AUC**.
 6. **Desbalanceamento:** `class_weight="balanced"` nos modelos que suportam.
 7. **Avaliação:** accuracy, precision, recall, F1, ROC-AUC, matriz de confusão,
    classification report e curvas ROC no conjunto de teste.
-
-**Por que a acurácia não basta?** Um modelo que sempre prevê "Baixa/Média" atinge
-~87% de acurácia, mas tem **recall zero** para os vinhos de alta qualidade — que
-são justamente os de interesse. Por isso priorizamos **ROC-AUC, recall e F1**.
 
 ## 8. Principais Resultados
 
@@ -137,25 +228,18 @@ prova de que a acurácia isolada é insuficiente.
 `citric acid` (0,10). Coerente com o conhecimento enológico: mais álcool e
 sulfatos e menor acidez volátil tendem a indicar vinhos melhor avaliados.
 
-Figuras em `reports/figures/` e métricas completas em `reports/metrics.json`.
+-> Figuras em [`results/figures/`](results\figures);
+-> Métricas completas em [`reports/metrics.json`](results\metrics.json);
+-> Resumo dos outliers em [`results/outliers_summary.csv`](results\outliers_summary.csv);
+-> Comparação dos modelos em [`results/results/model_comparison.csv`](results\model_comparison.csv);
 
 ## 9. Conclusão
 
 Foi possível construir um classificador que identifica vinhos de alta qualidade a
-partir de dados físico-químicos com **ROC-AUC de 0,92**, muito acima do acaso. O
-modelo é adequado como **ferramenta de triagem** para priorizar lotes promissores,
+partir de dados físico-químicos com **ROC-AUC de 0,92**. O modelo é adequado como 
+**ferramenta de triagem** para priorizar lotes promissores,
 sem substituir a avaliação sensorial humana. As variáveis mais relevantes oferecem
 alavancas concretas de processo (teor alcoólico, acidez volátil e sulfatos).
-
-## 10. Próximos Passos
-
-- Coletar mais amostras de alta qualidade para reduzir o desbalanceamento.
-- Testar técnicas de reamostragem (ex.: SMOTE) e comparar com `class_weight`.
-- **Calibrar o limiar de decisão** conforme o custo de negócio (falso positivo vs.
-  falso negativo).
-- Estender a análise ao vinho branco e explorar *feature engineering* adicional.
-- Empacotar o `best_model.joblib` como serviço de scoring (API) para uso em linha
-  de produção.
 
 ## Licença
 

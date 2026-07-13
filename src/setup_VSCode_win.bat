@@ -7,7 +7,7 @@ if not exist venv (
 )
 
 echo Ativando ambiente virtual...
-call venv\Scripts\activate.bat
+call venv\Scripts\activate
 
 echo Instalando dependencias...
 python.exe -m pip install --upgrade pip
