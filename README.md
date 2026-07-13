@@ -97,11 +97,45 @@ Se executado via VSCode ou outra IDE relacionada, é recomendado criar o ambient
 para execução do projeto, bem como instalar as dependências (bibliotecas) necessárias. Abaixo passo
 a passo para executar estes passos automaticamente (via script) ou de forma manual (caso o script automático falhe):
 
+### Rode Manualmente:
+
+```bash
+
+# 1) Criar e ativar ambiente virtual
+
+# MAC/Linux
+python3 -m venv venv
+source venv/bin/activate
+pip install "ipykernel"
+python3 -m ipykernel install --user --name=venv --display-name "Python (venv)"  
+
+# Windows:
+python -m venv venv
+venv\Scripts\Activate
+pip install "ipykernel"
+python -m ipykernel install --user --name=venv --display-name "Python (venv)"
+
+
+# 2) Instalar dependências
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+
+#3 Execute a pipeline do projeto
+
+# 3a) Abrir o notebook para explorar a análise passo a passo
+jupyter notebook notebooks/wine_classification.ipynb
+
+# 3b) Rodar o pipeline completo (gerando figuras, métricas e modelo) diretamente
+python src/python src/train_model.py
+
+```
+
 ### Rode Automaticamente:
 
 **Opção 1:** Abra o arquivo [`wine_classification.ipynb`](notebooks\wine_classification.ipynb) na IDE e execute "Run All" para 
 executar todo o código da pipeline, incluindo a criação e configuração do ambiente virtual `venv`;  
-**É Necessário que o Python esteja instalado na máquina** Além do ambiente virtual, toda a importação da base, preparação 
+**É Necessário que o Python esteja instalado na máquina** 
+Além do ambiente virtual, toda a importação da base, preparação 
 e configuração, Análise Exploratória dos Dados e modelagem também serão executadas. 
 
 **Opção 2:** Execute a pipeline através do script python [`train_classification_model.py`](src\train_classification_model.py) 
@@ -150,38 +184,7 @@ Do terceiro bloco de código em diante, segue o fluxo da importação da base de
 ...
 ```
 
-### Rode Manualmente:
-
-```bash
-
-# 1) Criar e ativar ambiente virtual
-
-# MAC/Linux
-python3 -m venv venv
-source venv/bin/activate
-pip install "ipykernel"
-python3 -m ipykernel install --user --name=venv --display-name "Python (venv)"  
-
-# Windows:
-python -m venv venv
-venv\Scripts\Activate
-pip install "ipykernel"
-python -m ipykernel install --user --name=venv --display-name "Python (venv)"
-
-
-# 2) Instalar dependências
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-
-#3 Execute a pipeline do projeto
-
-# 3a) Abrir o notebook para explorar a análise passo a passo
-jupyter notebook notebooks/wine_classification.ipynb
-
-# 3b) Rodar o pipeline completo (gerando figuras, métricas e modelo) diretamente
-python src/python src/train_model.py
-
-```
+**Roda manualmente (conforme instruções acima) caso a opção automática de criação e ativação do ambiente virtual falhe.**
 
 Ambos os caminhos são **reprodutíveis** (`random_state=42`) e regeram os mesmos
 artefatos em [`results/`](results), [`results/figures/`](results\figures) e [`models/`](models).
