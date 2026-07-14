@@ -1,11 +1,12 @@
-
 # Classificação da Qualidade de Vinhos com Machine Learning - Vitivinícola
 
 **Tech Challenge — Fase 2 — PósTech FIAP Data Analytics (2026)**
 Aluno: Bruno Ricardo de Oliveira
 
 ---
+
 #### Veja como executar a Pipeline mais abaixo no [tópico **6**](#Como-executar).
+
 ---
 
 ## 0. Entregáveis do projeto para avaliação
@@ -18,7 +19,8 @@ wine-quality-classification/
 ├── data/
 ├── entregaveis_trabalho/             # todos os entregáveis do trabalho para avaliação   
 │   ├── apresentacao_executiva.pdf    # apresentação executiva (slides da apresentação)    <---------
-│   ├── relatorio_executivo.pdf       # relatório executivo do projeto                     <---------
+│   ├── relatorio_executivo.pdf       # relatório executivo do projeto					   <---------
+│   ├── relatorio_tecnico.pdf         # relatório técnico do projeto    				   <---------
 │   ├── video_apresentacao.mp4        # apresentação executiva em vídeo do trabalho        <---------
 ├── models/
 ├── notebooks/
@@ -48,11 +50,12 @@ desempenho com métricas adequadas.
 
 A nota sensorial `quality` (0–10) foi transformada em um alvo binário:
 
-| Classe                      | Regra            | Interpretação                    |
-| --------------------------- | ---------------- | ---------------------------------- |
+
+| Classe                | Regra          | Interpretação                    |
+| ----------------------- | ---------------- | ------------------------------------ |
 | **1 — Alta**         | `quality >= 7` | Vinho de alta qualidade            |
 | **0 — Baixa/Média** | `quality < 7`  | Vinho de qualidade baixa ou média |
-.
+|                       |                |                                    |
 
 ## 4. Dados
 
@@ -66,8 +69,9 @@ wine-quality-classification/
 ├── data/
 │   └── WineQT.csv                     # base de dados
 ├── entregaveis_trabalho/              # todos os entregáveis do trabalho para avaliação
-│   ├── apresentacao_executiva.pptx    # apresentação executiva (slides da apresentação)
+│   ├── apresentacao_executiva.pdf     # apresentação executiva (slides da apresentação)
 │   ├── relatorio_executivo.pdf        # relatório executivo do projeto
+│   ├── relatorio_tecnico.pdf          # relatório técnico do projeto  
 │   ├── video_apresentacao.mp4         # apresentação executiva em vídeo do trabalho
 ├── models/
 │   └── model.joblib                   # melhor modelo serializado, conforme pipeline (gerado a partir da pipeline "train_classification_model.py")
@@ -127,22 +131,22 @@ jupyter notebook notebooks/wine_classification.ipynb
 
 # 3b) Rodar o pipeline completo (gerando figuras, métricas e modelo) diretamente
 python src/python src/train_model.py
-
 ```
 
 ### Rode Automaticamente:
 
-**Opção 1:** Abra o arquivo [`wine_classification.ipynb`](notebooks\wine_classification.ipynb) na IDE e execute "Run All" para 
-executar todo o código da pipeline, incluindo a criação e configuração do ambiente virtual `venv`;  
-**É Necessário que o Python esteja instalado na máquina** 
-Além do ambiente virtual, toda a importação da base, preparação 
-e configuração, Análise Exploratória dos Dados e modelagem também serão executadas. 
+**Opção 1:** Abra o arquivo [`wine_classification.ipynb`](notebooks\wine_classification.ipynb) na IDE e execute "Run All" para
+executar todo o código da pipeline, incluindo a criação e configuração do ambiente virtual `venv`;
+**É Necessário que o Python esteja instalado na máquina**
+Além do ambiente virtual, toda a importação da base, preparação
+e configuração, Análise Exploratória dos Dados e modelagem também serão executadas.
 
-**Opção 2:** Execute a pipeline através do script python [`train_classification_model.py`](src\train_classification_model.py) 
-disponível na pasta abaixo. Este script executa a pineline completa, incluindo geração e exportação dos gráficos da EDA, 
+**Opção 2:** Execute a pipeline através do script python [`train_classification_model.py`](src\train_classification_model.py)
+disponível na pasta abaixo. Este script executa a pineline completa, incluindo geração e exportação dos gráficos da EDA,
 modelagem, exportação e métricas e exportação do melhor modelo.
 
 Rode:
+
 ```bash
 python src/train_classification_model.py
 ```
@@ -161,14 +165,14 @@ Localização do arquivo:
 ...
 ```
 
-**Opção 3:** Ou execute por bloco de código (sempre na sequência) para executar a pipe line. O primeiro bloco de código chamará o 
+**Opção 3:** Ou execute por bloco de código (sempre na sequência) para executar a pipe line. O primeiro bloco de código chamará o
 script adequado para seu sistema operacional (arquivos `setup_VSCode_win.bat` ou `**setup_VSCode_mac.sh`) e criará o ambiente virtual
 `venv`. **É Necessário que o Python esteja instalado na máquina**
 
-No segundo bloco de código do notebook, as dependências listadas no arquivo ["requirements.txt"](requirements.txt) e necessárias 
+No segundo bloco de código do notebook, as dependências listadas no arquivo ["requirements.txt"](requirements.txt) e necessárias
 para execução do projeto serão instaladas no ambiente virtual.
 
-Do terceiro bloco de código em diante, segue o fluxo da importação da base de dados e primeiras configurações + EDA + modelagem. 
+Do terceiro bloco de código em diante, segue o fluxo da importação da base de dados e primeiras configurações + EDA + modelagem.
 
 ```
 ...
@@ -189,7 +193,7 @@ Do terceiro bloco de código em diante, segue o fluxo da importação da base de
 Ambos os caminhos são **reprodutíveis** (`random_state=42`) e regeram os mesmos
 artefatos em [`results/`](results), [`results/figures/`](results\figures) e [`models/`](models).
 
-> **Opcional (VS Code):** os script [`src/setup_VSCode_mac.sh`](src\setup_VSCode_mac.sh) e [`src/setup_VSCode_win.bat`](src\setup_VSCode_win.bat) 
+> **Opcional (VS Code):** os script [`src/setup_VSCode_mac.sh`](src\setup_VSCode_mac.sh) e [`src/setup_VSCode_win.bat`](src\setup_VSCode_win.bat)
 > automatiza a criação do ambiente virtual, a instalação das dependências e o registro do
 > kernel Jupyter para quem for explorar o notebook dentro do VS Code. Seu uso não é obrigatório —
 > O primeiro bloco de código do notebook [`wine_classification.ipynb`](notebooks\wine_classification.ipynb) chama os scripts acima de acordo
@@ -214,13 +218,14 @@ artefatos em [`results/`](results), [`results/figures/`](results\figures) e [`mo
 
 Desempenho no conjunto de teste (204 amostras):
 
-| Modelo                           | Accuracy | Precision | Recall | F1    | ROC-AUC         |
-| -------------------------------- | -------- | --------- | ------ | ----- | --------------- |
+
+| Modelo                     | Accuracy | Precision | Recall | F1    | ROC-AUC   |
+| ---------------------------- | ---------- | ----------- | -------- | ------- | ----------- |
 | **Random Forest** (melhor) | 0.873    | 0.515     | 0.630  | 0.567 | **0.919** |
-| SVM (RBF)                        | 0.907    | 0.750     | 0.444  | 0.558 | 0.904           |
-| Gradient Boosting                | 0.892    | 0.632     | 0.444  | 0.522 | 0.893           |
-| Regressão Logística            | 0.794    | 0.368     | 0.778  | 0.500 | 0.892           |
-| Baseline (majoritária)          | 0.868    | 0.000     | 0.000  | 0.000 | —              |
+| SVM (RBF)                  | 0.907    | 0.750     | 0.444  | 0.558 | 0.904     |
+| Gradient Boosting          | 0.892    | 0.632     | 0.444  | 0.522 | 0.893     |
+| Regressão Logística      | 0.794    | 0.368     | 0.778  | 0.500 | 0.892     |
+| Baseline (majoritária)    | 0.868    | 0.000     | 0.000  | 0.000 | —        |
 
 **Melhor modelo: Random Forest** (ROC-AUC = 0,919 no teste), superando com folga o
 baseline. Note que o baseline tem acurácia alta (0,868) porém **recall zero** —
@@ -239,7 +244,7 @@ sulfatos e menor acidez volátil tendem a indicar vinhos melhor avaliados.
 ## 9. Conclusão
 
 Foi possível construir um classificador que identifica vinhos de alta qualidade a
-partir de dados físico-químicos com **ROC-AUC de 0,92**. O modelo é adequado como 
+partir de dados físico-químicos com **ROC-AUC de 0,92**. O modelo é adequado como
 **ferramenta de triagem** para priorizar lotes promissores,
 sem substituir a avaliação sensorial humana. As variáveis mais relevantes oferecem
 alavancas concretas de processo (teor alcoólico, acidez volátil e sulfatos).

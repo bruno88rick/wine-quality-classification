@@ -26,12 +26,12 @@
     },
     "RandomForest": {
       "best_params": {
-        "clf__max_depth": 15,
+        "clf__max_depth": null,
         "clf__min_samples_leaf": 2,
         "clf__n_estimators": 500
       },
-      "cv_roc_auc_mean": 0.8741028829326701,
-      "cv_roc_auc_std": 0.036451902101242724
+      "cv_roc_auc_mean": 0.8737791286727458,
+      "cv_roc_auc_std": 0.03664189576200238
     },
     "GradientBoosting": {
       "best_params": {
@@ -39,8 +39,8 @@
         "clf__max_depth": 2,
         "clf__n_estimators": 200
       },
-      "cv_roc_auc_mean": 0.8673887814313346,
-      "cv_roc_auc_std": 0.04119102541856681
+      "cv_roc_auc_mean": 0.8672598323662154,
+      "cv_roc_auc_std": 0.040997248802678916
     }
   },
   "teste": [
@@ -50,7 +50,7 @@
       "precision": 0.5152,
       "recall": 0.6296,
       "f1": 0.5667,
-      "roc_auc": 0.919
+      "roc_auc": 0.9186
     },
     {
       "modelo": "SVM_RBF",
@@ -86,16 +86,16 @@
     }
   ],
   "importancia_variaveis": {
-    "alcohol": 0.215972691667149,
-    "volatile acidity": 0.1374436198901134,
-    "sulphates": 0.13414169927375222,
-    "citric acid": 0.10070750408958852,
-    "density": 0.08409604122843024,
-    "chlorides": 0.06937102619688942,
-    "total sulfur dioxide": 0.06841820182729474,
-    "fixed acidity": 0.058828766120359484,
-    "residual sugar": 0.04771166760311571,
-    "pH": 0.04353539641638113,
-    "free sulfur dioxide": 0.039773385686926045
+    "alcohol": 0.2159486632461184,
+    "volatile acidity": 0.13744992562727573,
+    "sulphates": 0.13417673871487584,
+    "citric acid": 0.10067510292284321,
+    "density": 0.08415726245195411,
+    "chlorides": 0.06933124808134297,
+    "total sulfur dioxide": 0.06853644287025268,
+    "fixed acidity": 0.058802916552792045,
+    "residual sugar": 0.047735093377566845,
+    "pH": 0.04342683524628183,
+    "free sulfur dioxide": 0.0397597709086964
   }
 }

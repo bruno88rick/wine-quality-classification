@@ -1,6 +1,6 @@
-"""Pipeline reprodutível de classificação da qualidade de vinhos.
-Tech Challenge - Fase 2 - PosTech FIAP Data Analytics.
-Bruo Ricardo de Oliveira - Data Analytics
+"""Pipeline reprodutível de classificação da qualidade de vinhos
+Tech Challenge - Fase 2 - PosTech FIAP Data Analytics
+Bruon Ricardo de Oliveira - Data Analytics
 
 Executa o fluxo completo e gera o arquivo joblib do melhor modelo: 
 carga dos dados, EDA (figuras), criação do alvo
@@ -8,14 +8,14 @@ binário (qualidade alta: quality >= 7), split treino/teste estratificado,
 pipelines scikit-learn com padronização, treino e tuning de vários modelos
 de classificação com validação cruzada, avaliação no conjunto de teste
 (matriz de confusão, classification report, ROC/AUC) e interpretação de
-importâncias de variáveis. 
+importâncias de variáveis 
 
-Todas as saídas são gravadas em results/ e models/.
+Todas as saídas são gravadas em results/ e models/
 
 Uso:
     python src/train_model.py
 
-Fixa a semente aleatória para reprodutibilidade.
+Fixa a semente aleatória para reprodutibilidade
 """
 
 from __future__ import annotations
@@ -78,8 +78,14 @@ DROP_COLS = ["Id"]
 
 def savefig(fig: plt.Figure, name: str) -> None:
     """
-    Salva figuras conforme pipe line - EDA e Modelagem
-    Salva em "results/figures/"
+    Função para salvar uma figura no diretório results/figures/
+
+    Parâmetros:
+        fig: figura matplotlib a ser salva
+        name: nome do arquivo de saída
+
+    Retorna:
+        None
     """
     path = FIGURES_DIR / name
     fig.tight_layout()
@@ -89,14 +95,17 @@ def savefig(fig: plt.Figure, name: str) -> None:
 
 
 def outlier_summary(df: pd.DataFrame) -> pd.DataFrame:
-    """Quantifica outliers por variavel pelo metodo do IQR e salva no CSV "outliers_summary.csv".
+    """
+    Função para quantificar os outliers de cada variável pelo método do IQR e
+    salvar o resultado em results/outliers_summary.csv
 
-    Um valor e outlier se estiver abaixo de Q1 - 1.5*IQR ou acima de
-    Q3 + 1.5*IQR. 
-    Nao removemos outliers: no dominio enologico eles costumam
-    representar perfis fisico-quimicos reais e podem carregar sinal util para
-    a classificacao. O tratamento adequado e a padronizacao (StandardScaler),
-    ja aplicada dentro dos pipelines de modelagem.
+    Parâmetros:
+        df: DataFrame com as variáveis físico-químicas (colunas quality e Id são
+            ignoradas no cálculo)
+
+    Retorna:
+        summary: DataFrame com limites, quantidade e percentual de outliers por
+            variável, ordenado pela quantidade de outliers
     """
     feats = df.drop(columns=["quality", "Id"], errors="ignore") \
               .select_dtypes(include=np.number).columns
@@ -120,7 +129,14 @@ def outlier_summary(df: pd.DataFrame) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 def load_data() -> pd.DataFrame:
     """
-    Função para carregar os dados do data Frame
+    Função para carregar e preparar a base de dados
+
+    Lê o CSV, descarta a coluna Id, reporta ausentes, gera o resumo de outliers
+    (sobre a base bruta) e remove linhas duplicadas antes do split para evitar
+    data leakage (o mesmo perfil físico-químico aparecer em treino e teste)
+
+    Retorna:
+        df: DataFrame sem a coluna Id e sem duplicatas, pronto para a modelagem
     """
     print("\n[1] Carregando dados...")
     df = pd.read_csv(DATA_PATH)
@@ -148,8 +164,17 @@ def load_data() -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 def run_eda(df: pd.DataFrame) -> None:
     """
-    Função que roda a Análise exploratória de dados e gera as 
-    figuras chamando "savefig"
+    Função para executar a Análise Exploratória de Dados (EDA) e gerar as figuras.
+
+    Produz e salva (via savefig) a distribuição da nota original, a distribuição
+    do alvo binário, a matriz de correlação, a correlação de cada variável com a
+    qualidade e boxplots das principais variáveis por classe
+
+    Parâmetros:
+        df: DataFrame já carregado e sem duplicatas
+
+    Retorna:
+        None
     """
     print("\n[2] EDA - gerando figuras...")
 
@@ -212,7 +237,20 @@ def run_eda(df: pd.DataFrame) -> None:
 # ---------------------------------------------------------------------------
 def prepare_split(df: pd.DataFrame):
     """
-    Função para criar o alvbo binário e fazer a separação da base para treino e teste
+    Função para criar o alvo binário e separar a base em treino e teste
+
+    O alvo é 1 quando quality >= QUALITY_THRESHOLD (alta qualidade) e 0 caso
+    contrário. O split é estratificado para preservar a proporção de classes
+
+    Parâmetros:
+        df: DataFrame de modelagem (sem duplicatas), contendo a coluna quality
+
+    Retorna:
+        X_train: variáveis de treino.
+        X_test: variáveis de teste.
+        y_train: alvo de treino.
+        y_test: alvo de teste.
+        feature_names: lista com os nomes das variáveis preditoras
     """
     print("\n[3] Criando alvo binario e separando treino/teste...")
     y = (df["quality"] >= QUALITY_THRESHOLD).astype(int)
@@ -232,12 +270,14 @@ def prepare_split(df: pd.DataFrame):
 # ---------------------------------------------------------------------------
 def build_model_space():
     """
-    Função que define os modelos e grids
-    Retorna models: Modelos definidos
+    Função para definir o espaço de modelos e seus grids de hiperparâmetros
 
-    StandardScaler entra dentro do Pipeline para que o fit ocorra apenas no
-    fold de treino de cada dobra da validacao cruzada, evitando data leakage.
-    class_weight='balanced' trata o desbalanceamento sem alterar os dados.
+    StandardScaler entra dentro do Pipeline para que o fit ocorra apenas no fold
+    de treino de cada dobra da validação cruzada, evitando data leakage
+    class_weight='balanced' trata o desbalanceamento sem alterar os dados
+
+    Retorna:
+        models: dicionário nome -> (pipeline, param_grid) para uso no GridSearchCV
     """
     models = {
         "LogisticRegression": (
@@ -290,15 +330,19 @@ def build_model_space():
 # ---------------------------------------------------------------------------
 def train_models(X_train, y_train):
     """
-    função para treinar os modelos
+    Função para treinar e tunar os modelos com validação cruzada
+
+    Ajusta um baseline (classe majoritária) e, para cada modelo do espaço de
+    busca, roda GridSearchCV com StratifiedKFold(5) otimizando ROC-AUC
+
     Parâmetros:
-        X_train:
-        y_train:
+        X_train: variáveis de treino
+        y_train: alvo de treino
 
     Retorna:
-        baseline: 
-        fitted:
-        cv_results:
+        baseline: DummyClassifier ajustado (referência de comparação)
+        fitted: dicionário nome -> melhor estimador (pipeline) de cada modelo.
+        cv_results: dicionário nome -> melhores parâmetros e ROC-AUC (média/desvio) da CV
     """
     print("\n[4] Treinando e tunando modelos (StratifiedKFold=5, scoring=ROC-AUC)...")
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
@@ -330,18 +374,22 @@ def train_models(X_train, y_train):
 def evaluate(baseline, fitted, X_test, y_test):
     """
     Função para avalidar os modelos no conjunto de teste
-    
+
+    Calcula accuracy, precision, recall, F1 e ROC-AUC de cada modelo (e do
+    baseline), consolida numa tabela ordenada por ROC-AUC e identifica o melhor
+    modelo (excluindo o baseline)
+
     Parâmetros:
-        baseline:
-        fitted:
-        X_test:
-        y_test:
+        baseline: DummyClassifier ajustado
+        fitted: dicionário nome -> estimador treinado
+        X_test: variáveis de teste
+        y_test: alvo de teste
 
     Retorna:
-        results_df: 
-        best_name:
-        preds:
-        scores_for_roc:
+        results_df: DataFrame de métricas por modelo, indexado por nome
+        best_name: nome do melhor modelo pelo ROC-AUC no teste
+        preds: dicionário nome -> predições de classe no teste
+        scores_for_roc: dicionário nome -> probabilidades da classe positiva (para curvas ROC)
     """
     print("\n[5] Avaliando no conjunto de teste...")
     rows = []
@@ -390,7 +438,25 @@ def evaluate(baseline, fitted, X_test, y_test):
 def evaluation_figures(results_df, best_name, fitted, preds, scores_for_roc,
                        X_test, y_test, feature_names):
     """
-    Função que cria as figuras de avaliação e interpretação, chamando savefig
+    Função para gerar as figuras de avaliação e interpretação (via savefig)
+
+    Produz a comparação de ROC-AUC entre modelos, a matriz de confusão do melhor
+    modelo, as curvas ROC e o gráfico de importância das variáveis (ou magnitude
+    dos coeficientes, conforme o tipo de modelo)
+
+    Parâmetros:
+        results_df: tabela de métricas por modelo
+        best_name: nome do melhor modelo
+        fitted: dicionário nome -> estimador treiado
+        preds: dicionário nome -> predições de classe no teste
+        scores_for_roc: dicionário nome -> probabilidades da classe positiva
+        X_test: variáveis de teste
+        y_test: alvbo de teste
+        feature_names: nomes das variáveis preditoras
+
+    Retorna:
+        importances: Series de importâncias/coeficientes ordenada (desc.), ou
+            None se o melhor modelo não expuser essa informação.
     """
     print("\n[6] Gerando figuras de avaliacao e interpretacao...")
 
@@ -460,17 +526,23 @@ def evaluation_figures(results_df, best_name, fitted, preds, scores_for_roc,
 def persist(results_df, best_name, fitted, cv_results, preds, importances,
             y_test, df_shape):
     """
-    Função para gerar as métricas e melhor modelo
-    
+    Função para persistir métricas, relatórios e o melhor modelo
+
+    Grava a tabela comparativa (CSV), o classification report (TXT), as métricas
+    consolidadas (JSON) e serializa o melhor modelo em models/model.joblib
+
     Parâmetros:
-        results_df:
-        best_name:
-        fitted:
-        cv_results:
-        preds:
-        importances,
-        y_test:
-        df_shape:
+        results_df: tabela de métricas por modelo
+        best_name: nome do melhor modelo
+        fitted: dicionário nome -> estimador treinado
+        cv_results: resultados da validação cruzada por modelo
+        preds: dicionário nome -> predições de classe no teste
+        importances: Series de importâncias das variáveis, ou None
+        y_test: alvo de teste
+        df_shape: tupla (linhas, colunas) da base usada na modelagem
+
+    Retorna:
+        None
     """
     print("\n[7] Salvando metricas, relatorios e modelo...")
 
@@ -509,7 +581,13 @@ def persist(results_df, best_name, fitted, cv_results, preds, importances,
 # ---------------------------------------------------------------------------
 def main():
     """
-    Função main printipal
+    Função printipal que orquestra o pipeline ponta a ponta
+
+    Executa, em ordem: carga dos dados, EDA, split, treino/tuning, avaliação,
+    figuras de interpretação e persistência dos artefatos
+
+    Retorna:
+        None
     """
     print("=" * 70)
     print("TECH CHALLENGE FASE 2 - CLASSIFICACAO DA QUALIDADE DE VINHOS")
